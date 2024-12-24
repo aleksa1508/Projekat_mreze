@@ -1,13 +1,11 @@
-﻿using System;
+﻿using KucniUredjaji;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
+using System.IO;
 using System.Net;
+using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using KucniUredjaji;
 
 namespace TCPClient
 {
@@ -46,7 +44,7 @@ namespace TCPClient
                     brojBajta = clientSocket.Receive(buffer);
                     string odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta);
 
-                        Console.WriteLine("Prijava->"+odgovor);
+                    Console.WriteLine("Prijava->" + odgovor);
                     if (odgovor == "USPESNO")
                     {
                         List<Uredjaj> uredjaji = new List<Uredjaj>();
@@ -68,11 +66,12 @@ namespace TCPClient
 
                         // Biranje uređaja
                         int izbor;
-                        do {
+                        do
+                        {
                             Console.WriteLine("Unesite redni broj uredjaja koji zelite da podesite:");
                             izbor = Int32.Parse(Console.ReadLine()) - 1;
                         } while (izbor < 0 || izbor >= uredjaji.Count);
-                        
+
                         Uredjaj izabraniUredjaj = uredjaji[izbor];
                         Console.WriteLine($"Izabrali ste uredjaj: {izabraniUredjaj.Ime}");
                         foreach (var v in izabraniUredjaj.Funkcije)
@@ -82,7 +81,7 @@ namespace TCPClient
                         // Menjanje funkcija uređaja
                         Console.WriteLine("Unesite ime funkcije koju zelite da promenite:");
                         string funkcija = Console.ReadLine();
-                        
+
 
                         /*
                         Console.WriteLine("Da li zelite jos neku komandu da izvrsite:");

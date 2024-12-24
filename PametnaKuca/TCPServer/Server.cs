@@ -1,13 +1,11 @@
-﻿using System;
+﻿using KucniUredjaji;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
+using System.IO;
 using System.Net;
+using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Threading.Tasks;
-using KucniUredjaji;
-using System.IO;
 
 namespace TCPServer
 {
@@ -15,7 +13,7 @@ namespace TCPServer
     {
         static void Main(string[] args)
         {
-            Random random = new Random();   
+            Random random = new Random();
             Uredjaj svijetlo = new Uredjaj("SVETLO", 52354);
             svijetlo.AzurirajFunkciju("Boja Crvena", "100");
             svijetlo.AzurirajFunkciju("Intenzitet", "70%");
@@ -59,7 +57,7 @@ namespace TCPServer
                         break;
                     }
                     string poruka = Encoding.UTF8.GetString(buffer, 0, brBajta);
-                    Console.WriteLine("Poruka klijenta: " + poruka+" "+brBajta);
+                    Console.WriteLine("Poruka klijenta: " + poruka + " " + brBajta);
 
                     string[] djelovi = poruka.Split(':');
                     Console.WriteLine(djelovi.Length + " " + djelovi[0] + " " + djelovi[1]);
@@ -69,7 +67,7 @@ namespace TCPServer
                         string odgovor = "USPESNO";
                         brBajta = acceptedSocket.Send(Encoding.UTF8.GetBytes(odgovor));
 
-                        int udpPort = random.Next(50000,60000);
+                        int udpPort = random.Next(50000, 60000);
                         using (MemoryStream ms = new MemoryStream())
                         {
 
