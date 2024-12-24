@@ -1,0 +1,12 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/PametnaKuca/.vs/PametnaKuca
+/PametnaKuca/KucniUredjaji/bin/Debug
+/PametnaKuca/KucniUredjaji/obj/Debug
+/PametnaKuca/TCPClient/bin/Debug
+/PametnaKuca/TCPClient/obj/Debug
+/PametnaKuca/TCPServer/bin/Debug
+/PametnaKuca/TCPServer/obj/Debug
