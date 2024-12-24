@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A1038076-DE87-4C25-8FAC-7B6707B32AD0}</ProjectGuid>
+    <ProjectGuid>{FA6D7CE7-7CBC-42BA-B585-540A60EC6855}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>TCPServer</RootNamespace>
-    <AssemblyName>TCPServer</AssemblyName>
+    <RootNamespace>UDPClient</RootNamespace>
+    <AssemblyName>UDPClient</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -43,21 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Server.cs" />
+    <Compile Include="UdpClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\KucniUredjaji\KucniUredjaji.csproj">
-      <Project>{a28102ba-0ac1-4936-b5de-fe54d45ac180}</Project>
-      <Name>KucniUredjaji</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\UDPServer\UDPServer.csproj">
-      <Project>{3029a2f7-a46f-43c7-a334-f265967f3f90}</Project>
-      <Name>UDPServer</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

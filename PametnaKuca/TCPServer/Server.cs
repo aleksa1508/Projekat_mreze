@@ -6,13 +6,16 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-
+using UDPServer;
 namespace TCPServer
 {
     public class Server
     {
+        private static UdpServer udpServer;
+
         static void Main(string[] args)
         {
+            udpServer = new UdpServer();
             Random random = new Random();
             Uredjaj svijetlo = new Uredjaj("SVETLO", 52354);
             svijetlo.AzurirajFunkciju("Boja Crvena", "100");
@@ -77,6 +80,16 @@ namespace TCPServer
                             //byte[] data = ms.ToArray();
                             acceptedSocket.Send(ms.ToArray());
                         }
+
+                        brBajta = acceptedSocket.Receive(buffer);
+                        poruka = Encoding.UTF8.GetString(buffer, 0, brBajta);
+                        Console.WriteLine("Komanda->" + poruka);
+                        UdpClient udpClient = new UdpClient();
+                        IPEndPoint udpEndPoint = new IPEndPoint(IPAddress.Loopback, 6000); // UDP Server na portu 6000
+
+                        byte[] messageBytes = Encoding.UTF8.GetBytes(poruka);
+                        udpClient.Send(messageBytes, messageBytes.Length, udpEndPoint);
+                        Console.WriteLine($"Poruka '{poruka}' poslata UDP serveru.");
                     }
                     else
                     {

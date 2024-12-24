@@ -83,6 +83,8 @@ namespace TCPClient
                         string funkcija = Console.ReadLine();
 
 
+                        brojBajta = clientSocket.Send(Encoding.UTF8.GetBytes(funkcija));
+
                         /*
                         Console.WriteLine("Da li zelite jos neku komandu da izvrsite:");
                         if (odgovor == "DA")
