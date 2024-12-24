@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -15,13 +16,14 @@ namespace TCPServer
 
         static void Main(string[] args)
         {
-            udpServer = new UdpServer();
+
             Random random = new Random();
-            Uredjaj svijetlo = new Uredjaj("SVETLO", 52354);
-            svijetlo.AzurirajFunkciju("Boja Crvena", "100");
-            svijetlo.AzurirajFunkciju("Intenzitet", "70%");
-            List<Uredjaj> uredjaji = new List<Uredjaj>();
-            uredjaji.Add(svijetlo);
+            Uredjaj u = new Uredjaj();
+            foreach(var u1 in u.SviUredjaji())
+            {
+                u1.AzurirajFunkciju("intezitet", "70%");
+            }
+            List<Uredjaj>uredjaji=u.SviUredjaji();  
             Dictionary<string, string> korisnici = new Dictionary<string, string>
             {
                 { "user1", "a" },
@@ -73,7 +75,7 @@ namespace TCPServer
                         int udpPort = random.Next(50000, 60000);
                         using (MemoryStream ms = new MemoryStream())
                         {
-
+                            
                             formatter.Serialize(ms, udpPort);
                             formatter.Serialize(ms, uredjaji);
 
@@ -81,15 +83,25 @@ namespace TCPServer
                             acceptedSocket.Send(ms.ToArray());
                         }
 
-                        brBajta = acceptedSocket.Receive(buffer);
-                        poruka = Encoding.UTF8.GetString(buffer, 0, brBajta);
-                        Console.WriteLine("Komanda->" + poruka);
+                        brBajta = acceptedSocket.Receive(buffer);;
+                        string komanda = "";
+                        string imeUredjaja = "";
+                        using (MemoryStream ms = new MemoryStream(buffer, 0, brBajta))
+                        {
+                            komanda = (string)formatter.Deserialize(ms);
+                            imeUredjaja = (string)formatter.Deserialize(ms);
+                            Console.WriteLine("Funkcija->"+ imeUredjaja);
+                            Console.WriteLine("Komanda->"+komanda);
+                            //Console.WriteLine($"{udpPort}");
+                        }
+
+
                         UdpClient udpClient = new UdpClient();
                         IPEndPoint udpEndPoint = new IPEndPoint(IPAddress.Loopback, 6000); // UDP Server na portu 6000
 
-                        byte[] messageBytes = Encoding.UTF8.GetBytes(poruka);
+                        byte[] messageBytes = Encoding.UTF8.GetBytes(komanda+":"+imeUredjaja);
                         udpClient.Send(messageBytes, messageBytes.Length, udpEndPoint);
-                        Console.WriteLine($"Poruka '{poruka}' poslata UDP serveru.");
+                        Console.WriteLine($"Poruka: {komanda} {imeUredjaja} je  poslata UDP serveru.");
                     }
                     else
                     {

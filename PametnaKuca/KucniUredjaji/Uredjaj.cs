@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace KucniUredjaji
 {
@@ -12,6 +13,7 @@ namespace KucniUredjaji
         public List<string> EvidencijaKomandi { get; private set; } // Evidencija komandi sa vremenskim oznakama
         public DateTime PoslednjaPromena { get; private set; }      // Vremenska oznaka poslednje promene
 
+        public List<Uredjaj> uredjaji { get; set; }
         // Konstruktor
         public Uredjaj(string ime, int port)
         {
@@ -20,6 +22,13 @@ namespace KucniUredjaji
             Funkcije = new Dictionary<string, string>();
             EvidencijaKomandi = new List<string>();
             PoslednjaPromena = DateTime.Now;
+        }
+
+        public Uredjaj()
+        {
+            uredjaji = new List<Uredjaj> {
+                new Uredjaj("Svetlo",60000)
+            };
         }
 
         // Dodavanje ili ažuriranje funkcije uređaja
@@ -57,6 +66,11 @@ namespace KucniUredjaji
         public string PrikaziEvidenciju()
         {
             return string.Join("\n", EvidencijaKomandi);
+        }
+
+        public List<Uredjaj> SviUredjaji()
+        {
+            return uredjaji;
         }
     }
 }

@@ -81,9 +81,17 @@ namespace TCPClient
                         // Menjanje funkcija uređaja
                         Console.WriteLine("Unesite ime funkcije koju zelite da promenite:");
                         string funkcija = Console.ReadLine();
+                        using (MemoryStream ms = new MemoryStream())
+                        {
 
+                            formatter.Serialize(ms, funkcija);
+                            formatter.Serialize(ms, izabraniUredjaj.Ime.ToString());
 
-                        brojBajta = clientSocket.Send(Encoding.UTF8.GetBytes(funkcija));
+                            //byte[] data = ms.ToArray();
+                            clientSocket.Send(ms.ToArray());
+                        }
+
+                        //brojBajta = clientSocket.Send(Encoding.UTF8.GetBytes(funkcija));
 
                         /*
                         Console.WriteLine("Da li zelite jos neku komandu da izvrsite:");

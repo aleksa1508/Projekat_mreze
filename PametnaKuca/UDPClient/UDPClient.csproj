@@ -49,5 +49,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\KucniUredjaji\KucniUredjaji.csproj">
+      <Project>{a28102ba-0ac1-4936-b5de-fe54d45ac180}</Project>
+      <Name>KucniUredjaji</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
