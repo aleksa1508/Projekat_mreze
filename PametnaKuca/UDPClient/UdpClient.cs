@@ -18,7 +18,7 @@ namespace UDPClient
             EndPoint posiljaocEP = new IPEndPoint(IPAddress.Any, 0);
             Uredjaj uredjaj = new Uredjaj();
             byte[] prijemniBafer = new byte[1024];
-            while (true) // 1.
+            while (true) 
             {
                 try
                 {
@@ -27,13 +27,69 @@ namespace UDPClient
                     int brBajta = clientSocket.SendTo(binarnaPoruka, 0, binarnaPoruka.Length, SocketFlags.None, destinationEP);
                     Console.WriteLine($"Uspesno poslato {brBajta} ka {destinationEP}");
 
-                    brBajta = clientSocket.ReceiveFrom(prijemniBafer, ref posiljaocEP);
 
-                    string poruka = Encoding.UTF8.GetString(prijemniBafer, 0, brBajta);
+                        brBajta = clientSocket.ReceiveFrom(prijemniBafer, ref posiljaocEP);
 
-                    Console.WriteLine($"Stigao je odgovor od {posiljaocEP}, duzine {brBajta}, Funkcija je :{poruka}");
+                        string poruka = Encoding.UTF8.GetString(prijemniBafer, 0, brBajta);
 
-                 
+                        Console.WriteLine($"Stigao je odgovor od {posiljaocEP}, duzine {brBajta}, Funkcija je :{poruka}");
+
+                        string[] delovi = poruka.Split(':');
+                        string funkcija = delovi[0];
+                        string imeUredjaj = delovi[1];
+                        Console.WriteLine(funkcija + " " + imeUredjaj);
+                        foreach(var u in uredjaj.SviUredjaji())
+                        {
+                       
+                        if (u.Ime.ToString() == imeUredjaj)
+                            {
+                          
+                            if (u.Ime.ToString() == "Svetlo")
+                                {
+                                    foreach(var f in u.Funkcije)
+                                    {
+                                    Console.WriteLine(f.Key.ToString());
+                                        if(f.Key.ToString() == funkcija)
+                                        {
+                                            if (f.Key.ToString() == "intezitet")
+                                            {
+                                                Console.WriteLine($"Unesi novu vrijednost za {funkcija}(0%-100%):");
+                                                string novaVrijednost=Console.ReadLine(); 
+                                                u.AzurirajFunkciju(funkcija, novaVrijednost);
+                                                binarnaPoruka = Encoding.UTF8.GetBytes($"Funkcija {funkcija} je azurirana na vrijednost{novaVrijednost} ");
+                                                brBajta = clientSocket.SendTo(binarnaPoruka, 0, binarnaPoruka.Length, SocketFlags.None, destinationEP);
+                                                Console.WriteLine($"Uspesno poslato {brBajta} ka {destinationEP}");
+                                                break;
+                                            }
+                                            else 
+                                            {
+                                                Console.WriteLine($"Unesi novu vrijednost za {funkcija}(0-255):");
+                                                string novaVrijednost = Console.ReadLine();
+                                                u.AzurirajFunkciju(funkcija, novaVrijednost);
+                                            break;
+                                            }
+                                        }
+                                    }
+                                }else if (u.Ime == "TV")
+                                {
+
+                                }
+                            }else{
+                                Console.WriteLine("Nije pronadjen uredjaj");
+                            }
+                        }
+                    Console.WriteLine("AZURIRANJE VRIJEDNOSTI\n");
+
+                        foreach(var a in uredjaj.SviUredjaji())
+                        {
+                            if (a.Ime == "Svetlo")
+                            {
+                                foreach(var f in a.Funkcije)
+                                {
+                                    Console.WriteLine(f.Key +  " "+ f.Value);
+                                }
+                            }
+                        }
 
 
                     break;

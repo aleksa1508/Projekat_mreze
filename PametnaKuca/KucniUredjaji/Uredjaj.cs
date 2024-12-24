@@ -23,11 +23,19 @@ namespace KucniUredjaji
             EvidencijaKomandi = new List<string>();
             PoslednjaPromena = DateTime.Now;
         }
+        public Uredjaj(string ime, int port, Dictionary<string, string> funkcije)
+        {
+            Ime = ime;
+            Port = port;
+            Funkcije = funkcije;
+            EvidencijaKomandi = new List<string>();
+            PoslednjaPromena = DateTime.Now;
+        }
 
         public Uredjaj()
         {
             uredjaji = new List<Uredjaj> {
-                new Uredjaj("Svetlo",60000)
+                new Uredjaj("Svetlo",60000,new Dictionary<string, string>{{ "intezitet", "70%" },{ "STANJE", "ISKLJUCENO" }})
             };
         }
 
@@ -42,7 +50,7 @@ namespace KucniUredjaji
             {
                 Funkcije.Add(funkcija, vrednost);
             }
-
+            
             // Ažuriraj vremensku oznaku
             PoslednjaPromena = DateTime.Now;
 

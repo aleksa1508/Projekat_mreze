@@ -19,10 +19,6 @@ namespace TCPServer
 
             Random random = new Random();
             Uredjaj u = new Uredjaj();
-            foreach(var u1 in u.SviUredjaji())
-            {
-                u1.AzurirajFunkciju("intezitet", "70%");
-            }
             List<Uredjaj>uredjaji=u.SviUredjaji();  
             Dictionary<string, string> korisnici = new Dictionary<string, string>
             {

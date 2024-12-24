@@ -46,7 +46,7 @@ namespace UDPServer
                 brBajta = serverSocket.ReceiveFrom(prijemniBafer, ref posiljaocEP); // Primamo poruku i podatke o posiljaocu
                 poruka = Encoding.UTF8.GetString(prijemniBafer, 0, brBajta);
                 Console.WriteLine($"Poruka primljena od UDP KLIJENTA: {poruka}");
-
+                
                 break;
             }
         Console.WriteLine("Server zavrsava sa radom");
