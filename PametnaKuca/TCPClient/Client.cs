@@ -74,9 +74,11 @@ namespace TCPClient
 
                         Uredjaj izabraniUredjaj = uredjaji[izbor];
                         Console.WriteLine($"Izabrali ste uredjaj: {izabraniUredjaj.Ime}");
+                        Console.WriteLine("[Ime funkcije , Vrednost]");
+                        Console.WriteLine("--------------------------");
                         foreach (var v in izabraniUredjaj.Funkcije)
                         {
-                            Console.WriteLine(v.ToString());
+                            Console.WriteLine("-" + v.ToString());
                         }
                         // Menjanje funkcija uređaja
                         Console.WriteLine("Unesite ime funkcije koju zelite da promenite:");

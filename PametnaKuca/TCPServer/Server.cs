@@ -86,6 +86,7 @@ namespace TCPServer
                         using (MemoryStream ms = new MemoryStream(buffer, 0, brBajta))
                         {
                             komanda = (string)formatter.Deserialize(ms);
+                            komanda = komanda.ToLower();
                             imeUredjaja = (string)formatter.Deserialize(ms);
                             Console.WriteLine("Funkcija->"+ imeUredjaja);
                             Console.WriteLine("Komanda->"+komanda);
@@ -99,6 +100,17 @@ namespace TCPServer
                         byte[] messageBytes = Encoding.UTF8.GetBytes(komanda+":"+imeUredjaja);
                         udpClient.Send(messageBytes, messageBytes.Length, udpEndPoint);
                         Console.WriteLine($"Poruka: {komanda} {imeUredjaja} je  poslata UDP serveru.");
+
+                        messageBytes = udpClient.Receive(ref udpEndPoint);
+                        string message = Encoding.UTF8.GetString(messageBytes);
+                        Console.WriteLine($"Poruka od udp servera->Azurirana vrijednost funkcije {komanda} za {imeUredjaja} je "+ message);
+                        foreach (var s in uredjaji)
+                        {
+                            if (s.Ime == imeUredjaja)
+                            {
+                                s.AzurirajFunkciju(komanda, message);
+                            }
+                        }
                     }
                     else
                     {

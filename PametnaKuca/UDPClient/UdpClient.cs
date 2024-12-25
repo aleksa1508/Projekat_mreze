@@ -56,7 +56,8 @@ namespace UDPClient
                                                 Console.WriteLine($"Unesi novu vrijednost za {funkcija}(0%-100%):");
                                                 string novaVrijednost=Console.ReadLine(); 
                                                 u.AzurirajFunkciju(funkcija, novaVrijednost);
-                                                binarnaPoruka = Encoding.UTF8.GetBytes($"Funkcija {funkcija} je azurirana na vrijednost{novaVrijednost} ");
+                                                Console.WriteLine($"Funkcija {funkcija} je azurirana na vrijednost->{novaVrijednost} ");
+                                                binarnaPoruka = Encoding.UTF8.GetBytes(novaVrijednost+"%");
                                                 brBajta = clientSocket.SendTo(binarnaPoruka, 0, binarnaPoruka.Length, SocketFlags.None, destinationEP);
                                                 Console.WriteLine($"Uspesno poslato {brBajta} ka {destinationEP}");
                                                 break;
@@ -66,6 +67,10 @@ namespace UDPClient
                                                 Console.WriteLine($"Unesi novu vrijednost za {funkcija}(0-255):");
                                                 string novaVrijednost = Console.ReadLine();
                                                 u.AzurirajFunkciju(funkcija, novaVrijednost);
+                                                Console.WriteLine($"Funkcija {funkcija} je azurirana na vrijednost->{novaVrijednost} ");
+                                                binarnaPoruka = Encoding.UTF8.GetBytes(novaVrijednost);
+                                                brBajta = clientSocket.SendTo(binarnaPoruka, 0, binarnaPoruka.Length, SocketFlags.None, destinationEP);
+                                                Console.WriteLine($"Uspesno poslato {brBajta} ka {destinationEP}");
                                             break;
                                             }
                                         }

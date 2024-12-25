@@ -35,7 +35,7 @@ namespace KucniUredjaji
         public Uredjaj()
         {
             uredjaji = new List<Uredjaj> {
-                new Uredjaj("Svetlo",60000,new Dictionary<string, string>{{ "intezitet", "70%" },{ "STANJE", "ISKLJUCENO" }})
+                new Uredjaj("Svetlo",60000,new Dictionary<string, string>{{ "intezitet", "70%" },{ "boja plava", "220" },{ "boja crvena", "110" }})
             };
         }
 
