@@ -80,5 +80,13 @@ namespace KucniUredjaji
         {
             return uredjaji;
         }
+        public void AzurirajListu(List<Uredjaj>noviUredjaji)
+        {
+            uredjaji=noviUredjaji;
+        }
+
+
+
+
     }
 }

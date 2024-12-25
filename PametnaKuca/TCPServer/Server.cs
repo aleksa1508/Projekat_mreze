@@ -19,6 +19,7 @@ namespace TCPServer
 
             Random random = new Random();
             Uredjaj u = new Uredjaj();
+
             List<Uredjaj>uredjaji=u.SviUredjaji();  
             Dictionary<string, string> korisnici = new Dictionary<string, string>
             {
