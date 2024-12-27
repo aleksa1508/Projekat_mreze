@@ -14,7 +14,8 @@ namespace UDPClient
         static void Main(string[] args)
         {
             Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            IPEndPoint destinationEP = new IPEndPoint(IPAddress.Loopback, 50001); // Odredisni IPEndPoint, IP i port ka kome saljemo. U slucaju 8. tacke je potrebno uneti IP adresu server racunara
+
+            IPEndPoint destinationEP1 = new IPEndPoint(IPAddress.Loopback, 50001);
             EndPoint posiljaocEP = new IPEndPoint(IPAddress.Any, 0);
             Uredjaj uredjaj = new Uredjaj();
             byte[] prijemniBafer = new byte[1024];
@@ -22,18 +23,21 @@ namespace UDPClient
             {
                 try
                 {
-
                     byte[] binarnaPoruka = Encoding.UTF8.GetBytes("UDP Klijent se povezao");
-                    int brBajta = clientSocket.SendTo(binarnaPoruka, 0, binarnaPoruka.Length, SocketFlags.None, destinationEP);
-                    Console.WriteLine($"Uspesno poslato {brBajta} ka {destinationEP}");
+                    int brBajta = clientSocket.SendTo(binarnaPoruka, 0, binarnaPoruka.Length, SocketFlags.None, destinationEP1);
+                    Console.WriteLine($"Uspesno poslato {brBajta} ka {destinationEP1}");
 
-
-                        brBajta = clientSocket.ReceiveFrom(prijemniBafer, ref posiljaocEP);
+                         brBajta = clientSocket.ReceiveFrom(prijemniBafer, ref posiljaocEP);
 
                         string poruka = Encoding.UTF8.GetString(prijemniBafer, 0, brBajta);
 
-                        Console.WriteLine($"Stigao je odgovor od {posiljaocEP}, duzine {brBajta}, Funkcija je :{poruka}");
+                        IPEndPoint destinationEP = new IPEndPoint(IPAddress.Loopback, Int32.Parse(poruka)); // Odredisni IPEndPoint, IP i port ka kome saljemo. U slucaju 8. tacke je potrebno uneti IP adresu server racunara
+                         Console.WriteLine("UDP PORT->"+poruka);
 
+
+                        Console.WriteLine($"Stigao je odgovor od {posiljaocEP}, duzine {brBajta}, Funkcija je :{poruka}");
+                        
+                        
                         string[] delovi = poruka.Split(':');
                         string funkcija = delovi[0];
                         string imeUredjaj = delovi[1];

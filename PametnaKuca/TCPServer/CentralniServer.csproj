@@ -54,10 +54,6 @@
       <Project>{a28102ba-0ac1-4936-b5de-fe54d45ac180}</Project>
       <Name>KucniUredjaji</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UDPServer\UDPServer.csproj">
-      <Project>{3029a2f7-a46f-43c7-a334-f265967f3f90}</Project>
-      <Name>UDPServer</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
