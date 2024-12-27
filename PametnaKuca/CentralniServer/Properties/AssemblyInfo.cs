@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("UDPServer")]
+[assembly: AssemblyTitle("CentralniServer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("UDPServer")]
+[assembly: AssemblyProduct("CentralniServer")]
 [assembly: AssemblyCopyright("Copyright ©  2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("3029a2f7-a46f-43c7-a334-f265967f3f90")]
+[assembly: Guid("5cf5a565-58f9-4dc9-b0ae-187889bbb128")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -36,7 +36,7 @@ namespace TCPClient
                 string format = $"{korisnickoIme}:{lozinka}";
                 brojBajta = clientSocket.Send(Encoding.UTF8.GetBytes(format));
                 brojBajta = clientSocket.Receive(buffer);
-                 odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta);
+                odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta);
 
                 Console.WriteLine("Prijava->" + odgovor);
             } while (odgovor != "USPESNO");
@@ -55,7 +55,7 @@ namespace TCPClient
                 destinationEP = new IPEndPoint(IPAddress.Loopback, assignedPort);
 
             }
-            string initialMessage =$"Klijent se povezao na udp port:{assignedPort}";
+            string initialMessage = $"Klijent se povezao na udp port:{assignedPort}";
             byte[] initialData = Encoding.UTF8.GetBytes(initialMessage);
             udpSocket.SendTo(initialData, destinationEP);
 
@@ -68,7 +68,7 @@ namespace TCPClient
                 {
                     brojBajta = clientSocket.Receive(buffer);
 
-                    List<Uredjaj>uredjaji= new List<Uredjaj>();
+                    List<Uredjaj> uredjaji = new List<Uredjaj>();
                     using (MemoryStream ms = new MemoryStream(buffer, 0, brojBajta))
                     {
                         List<Uredjaj> lista = (List<Uredjaj>)formatter.Deserialize(ms);
@@ -114,17 +114,17 @@ namespace TCPClient
                         if (provera)
                         {
                             Console.WriteLine("Unesite novu vrijednost:");
-                             vrednost = Console.ReadLine();
+                            vrednost = Console.ReadLine();
                         }
-                       // izabraniUredjaj.AzurirajFunkciju(funkcija, vrednost);
+                        // izabraniUredjaj.AzurirajFunkciju(funkcija, vrednost);
                     } while (!provera);
 
 
                     initialData = Encoding.UTF8.GetBytes($"{izabraniUredjaj.Ime}:{funkcija}:{vrednost}");
                     udpSocket.SendTo(initialData, destinationEP);
 
-                        brojBajta = clientSocket.Receive(buffer);
-                        odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta);
+                    brojBajta = clientSocket.Receive(buffer);
+                    odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta);
                     string dodatak = "";
                     do
                     {
@@ -140,7 +140,7 @@ namespace TCPClient
 
 
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex.ToString());
                 }

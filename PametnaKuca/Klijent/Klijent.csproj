@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{506A4368-339E-4303-9392-F689478972FB}</ProjectGuid>
+    <ProjectGuid>{BE0106DB-4019-472C-84D8-38EA58B12790}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>TCPClient</RootNamespace>
-    <AssemblyName>TCPClient</AssemblyName>
+    <RootNamespace>Klijent</RootNamespace>
+    <AssemblyName>Klijent</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client.cs" />
+    <Compile Include="Klijent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

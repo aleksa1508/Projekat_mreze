@@ -13,14 +13,14 @@ namespace TCPServer
 {
     public class Server
     {
-//        private static UdpServer udpServer;
+        //        private static UdpServer udpServer;
 
         static void Main(string[] args)
         {
 
             Random random = new Random();
             Uredjaj u = new Uredjaj();
-            List<Uredjaj>uredjaji=u.SviUredjaji();  
+            List<Uredjaj> uredjaji = u.SviUredjaji();
             Dictionary<string, string> korisnici = new Dictionary<string, string>
             {
                 { "user1", "a" },
@@ -43,11 +43,11 @@ namespace TCPServer
             IPEndPoint clientEP = acceptedSocket.RemoteEndPoint as IPEndPoint;
             Console.WriteLine($"Povezao se novi klijent! Njegova adresa je {clientEP}");
             //----------------------------------------------------------------------------------------
-     
 
-             byte[] buffer = new byte[4096];
+
+            byte[] buffer = new byte[4096];
             BinaryFormatter formatter = new BinaryFormatter();
-                bool validacija = false;
+            bool validacija = false;
             do
             {
                 int brBajta = acceptedSocket.Receive(buffer);
@@ -89,42 +89,42 @@ namespace TCPServer
             {
                 try
                 {
-                        using (MemoryStream ms = new MemoryStream())
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+
+                        formatter.Serialize(ms, uredjaji);
+                        byte[] data = ms.ToArray();
+
+                        acceptedSocket.Send(data);
+                    }
+
+                    receivedBytes = controlSocket.ReceiveFrom(buffer, ref deviceEndpoint);
+                    receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
+                    Console.WriteLine($"UDP klijent je poslao poruku-> {receivedMessage}");
+
+                    string[] parts = receivedMessage.Split(':');
+                    Console.WriteLine(parts.Length + " " + parts[0] + " " + parts[1] + " " + parts[2]);
+                    foreach (var s in uredjaji)
+                    {
+                        if (s.Ime == parts[0])
                         {
-
-                            formatter.Serialize(ms, uredjaji);
-                            byte[] data = ms.ToArray();
-
-                            acceptedSocket.Send(data);
-                        }
-
-                         receivedBytes = controlSocket.ReceiveFrom(buffer, ref deviceEndpoint);
-                         receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
-                        Console.WriteLine($"UDP klijent je poslao poruku-> {receivedMessage}");
-
-                        string []parts = receivedMessage.Split(':');
-                        Console.WriteLine(parts.Length + " " + parts[0] + " " + parts[1]+" " + parts[2]);
-                        foreach(var s in uredjaji)
-                        {
-                            if (s.Ime == parts[0])
-                            {
-                                s.AzurirajFunkciju(parts[1], parts[2]);
-                                break;
-                            }
-                        }
-                        string odgovor = "Da li zelite da izvrsite jos neku komandu";
-                        brojBajta = acceptedSocket.Send(Encoding.UTF8.GetBytes(odgovor));
-
-                        brojBajta = acceptedSocket.Receive(buffer);
-                        odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta);
-
-                        if (odgovor == "ne")
-                        {
+                            s.AzurirajFunkciju(parts[1], parts[2]);
                             break;
                         }
+                    }
+                    string odgovor = "Da li zelite da izvrsite jos neku komandu";
+                    brojBajta = acceptedSocket.Send(Encoding.UTF8.GetBytes(odgovor));
+
+                    brojBajta = acceptedSocket.Receive(buffer);
+                    odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta);
+
+                    if (odgovor == "ne")
+                    {
+                        break;
+                    }
 
                 }
-                catch(Exception ex) 
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex.ToString());
                 }

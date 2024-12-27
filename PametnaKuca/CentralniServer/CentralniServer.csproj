@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A1038076-DE87-4C25-8FAC-7B6707B32AD0}</ProjectGuid>
+    <ProjectGuid>{5CF5A565-58F9-4DC9-B0AE-187889BBB128}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>TCPServer</RootNamespace>
-    <AssemblyName>TCPServer</AssemblyName>
+    <RootNamespace>CentralniServer</RootNamespace>
+    <AssemblyName>CentralniServer</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
