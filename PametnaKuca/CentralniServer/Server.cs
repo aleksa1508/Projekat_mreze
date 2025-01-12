@@ -65,6 +65,7 @@ namespace TCPServer
                     Console.WriteLine("Prijavljivanje je uspesno\n");
                     string odgovor = "USPESNO";
                     brBajta = acceptedSocket.Send(Encoding.UTF8.GetBytes(odgovor));
+                    
                     validacija = true;
                 }
                 else
@@ -72,8 +73,10 @@ namespace TCPServer
                     Console.WriteLine("Prijavljivanje nije uspesno\n");
                     string odgovor = "NEUSPESNO";
                     brBajta = acceptedSocket.Send(Encoding.UTF8.GetBytes(odgovor));
+                    
                 }
             } while (!validacija);
+            Thread.Sleep(2000);
             int udpPort = random.Next(50000, 60000);
             int brojBajta = acceptedSocket.Send(Encoding.UTF8.GetBytes(udpPort.ToString()));
             //kreiranje udp uticnice
@@ -112,6 +115,7 @@ namespace TCPServer
                             break;
                         }
                     }
+                    //Console.WriteLine("aaaaaaaaaaaaaaaaaaaaaaaa");
                     string odgovor = "Da li zelite da izvrsite jos neku komandu";
                     brojBajta = acceptedSocket.Send(Encoding.UTF8.GetBytes(odgovor));
 
@@ -134,5 +138,6 @@ namespace TCPServer
             acceptedSocket.Close();
             controlSocket.Close();
         }
+
     }
 }
