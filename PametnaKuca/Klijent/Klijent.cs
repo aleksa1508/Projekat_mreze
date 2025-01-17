@@ -8,15 +8,15 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 
-namespace TCPClient
+namespace Korisnik
 {
-    public class Client
+    public class Klijent
     {
         static void Main(string[] args)
         {
             // Povezivanje
             Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            clientSocket.Blocking = false;
+           // clientSocket.Blocking = false;
 
             IPEndPoint serverEP = new IPEndPoint(IPAddress.Loopback, 50001);
             byte[] buffer = new byte[4096];
@@ -103,8 +103,8 @@ namespace TCPClient
                     return;
                 }
             } while (!odgovor.StartsWith("USPESNO"));
-
-            Thread.Sleep(2000);
+            
+            //Thread.Sleep(2000);
             // Prijem UDP porta
             try
             {
@@ -131,7 +131,8 @@ namespace TCPClient
 
             // Povezivanje na UDP
             Socket udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            udpSocket.Blocking = false;
+            //udpSocket.Blocking = false;
+            EndPoint deviceEndpoint = new IPEndPoint(IPAddress.Any, 0);
             int assignedPort;
             IPEndPoint destinationEP = new IPEndPoint(IPAddress.Loopback, 0);
 
@@ -220,23 +221,38 @@ namespace TCPClient
                         } while (!provera);
 
                         initialData = Encoding.UTF8.GetBytes($"{izabraniUredjaj.Ime}:{funkcija}:{vrednost}");
-                        udpSocket.SendTo(initialData, destinationEP);
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            BinaryFormatter bf = new BinaryFormatter();
+                            bf.Serialize(ms, izabraniUredjaj);
+                            bf.Serialize(ms, funkcija);
+                            bf.Serialize(ms,vrednost);
+                            byte[] data = ms.ToArray();
 
-                        brojBajta = clientSocket.Receive(buffer);
-                        odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta);
+                            udpSocket.SendTo(data, destinationEP);
+                        }
+                        //udpSocket.SendTo(initialData, destinationEP);
+
+                        int receivedBytes = udpSocket.ReceiveFrom(buffer, ref deviceEndpoint);
+                        string receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
+                        Console.WriteLine($"Korisnik preko UDP je poslao poruku-> {receivedMessage}");
+
+
+                       /* brojBajta = clientSocket.Receive(buffer);
+                        odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta);*/
                         string dodatak = "";
                         do
                         {
-                            Console.WriteLine(odgovor + "(da/ne)");
+                            Console.WriteLine(receivedMessage + "(da/ne)");
                             dodatak = Console.ReadLine();
                         } while (dodatak != "da" && dodatak != "ne");
 
                         if (dodatak.ToLower() == "ne")
                         {
-                            clientSocket.Send(Encoding.UTF8.GetBytes(dodatak));
+                            udpSocket.SendTo(Encoding.UTF8.GetBytes(dodatak),destinationEP);
                             break;
                         }
-                        clientSocket.Send(Encoding.UTF8.GetBytes(dodatak));
+                        udpSocket.SendTo(Encoding.UTF8.GetBytes(dodatak), destinationEP);
                     }
                 }
                 catch (SocketException ex)

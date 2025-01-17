@@ -20,7 +20,6 @@ namespace TCPServer
 
             Random random = new Random();
             Uredjaj u = new Uredjaj();
-            List<Uredjaj> uredjaji = u.SviUredjaji();
             Dictionary<string, string> korisnici = new Dictionary<string, string>
             {
                 { "user1", "a" },
@@ -39,7 +38,7 @@ namespace TCPServer
             Console.WriteLine($"Server je stavljen u stanje osluskivanja i ocekuje komunikaciju na {serverEP}");
 
             Socket acceptedSocket = serverSocket.Accept();
-
+            //acceptedSocket.Blocking = false;
             IPEndPoint clientEP = acceptedSocket.RemoteEndPoint as IPEndPoint;
             Console.WriteLine($"Povezao se novi klijent! Njegova adresa je {clientEP}");
             //----------------------------------------------------------------------------------------
@@ -50,6 +49,7 @@ namespace TCPServer
             bool validacija = false;
             do
             {
+
                 int brBajta = acceptedSocket.Receive(buffer);
                 if (brBajta == 0)
                 {
@@ -76,22 +76,38 @@ namespace TCPServer
                     
                 }
             } while (!validacija);
-            Thread.Sleep(2000);
-            int udpPort = random.Next(50000, 60000);
+            //Thread.Sleep(2000);
+            int udpPort = random.Next(50002, 60000);
             int brojBajta = acceptedSocket.Send(Encoding.UTF8.GetBytes(udpPort.ToString()));
             //kreiranje udp uticnice
             Socket controlSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             EndPoint deviceEndpoint = new IPEndPoint(IPAddress.Any, 0);
-            IPEndPoint udpServerEP = new IPEndPoint(IPAddress.Any, udpPort);
+
+            IPEndPoint udpServerEP = new IPEndPoint(IPAddress.Loopback, udpPort);
             controlSocket.Bind(udpServerEP);
             int receivedBytes = controlSocket.ReceiveFrom(buffer, ref deviceEndpoint);
             string receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
-            Console.WriteLine($"UDP klijent je poslao poruku-> {receivedMessage}");
+            Console.WriteLine($"Korisnik preko UDP je poslao poruku-> {receivedMessage} {((IPEndPoint)deviceEndpoint).Port}");
 
-            while (true)
+            //PROOVJERA OD KOGA JE DOSLA PORUKA ALI NIJE DOBAR KOD
+            /* if (((IPEndPoint)deviceEndpoint).Port == udpPort)
+             {
+                 Console.WriteLine("Poruka od korisnika.");
+                 // Obrada poruke od uređaja
+                 Console.WriteLine($"Korisnik preko UDP je poslao poruku-> {receivedMessage}");
+             }*/
+            try
             {
-                try
+                while (true)
                 {
+                    List<Uredjaj> uredjaji = u.SviUredjaji();
+                    foreach (var v in uredjaji)
+                    {
+                        foreach (var s in v.Funkcije)
+                        {
+                            Console.WriteLine(s.Key + " " + s.Value);
+                        }
+                    }
                     using (MemoryStream ms = new MemoryStream())
                     {
 
@@ -102,37 +118,62 @@ namespace TCPServer
                     }
 
                     receivedBytes = controlSocket.ReceiveFrom(buffer, ref deviceEndpoint);
-                    receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
-                    Console.WriteLine($"UDP klijent je poslao poruku-> {receivedMessage}");
+                    /* receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
+                     Console.WriteLine($"Korisnik preko UDP je poslao poruku-> {receivedMessage}");*/
 
-                    string[] parts = receivedMessage.Split(':');
-                    Console.WriteLine(parts.Length + " " + parts[0] + " " + parts[1] + " " + parts[2]);
-                    foreach (var s in uredjaji)
+                    int udpPortUrejdjaja = 0;
+                    string funkcija = "";
+                    string vrednost = "";
+                    string ime = "";
+                    using (MemoryStream ms = new MemoryStream(buffer, 0, receivedBytes))
                     {
-                        if (s.Ime == parts[0])
-                        {
-                            s.AzurirajFunkciju(parts[1], parts[2]);
-                            break;
-                        }
+                        Uredjaj u1 = (Uredjaj)formatter.Deserialize(ms);
+                        funkcija = (string)formatter.Deserialize(ms);
+                        vrednost = (string)formatter.Deserialize(ms);
+                        udpPortUrejdjaja = u1.Port;
+                        ime = u1.Ime;
                     }
-                    //Console.WriteLine("aaaaaaaaaaaaaaaaaaaaaaaa");
+
+                    /*if (((IPEndPoint)deviceEndpoint).Port == udpPort)
+                    {
+                        Console.WriteLine("Poruka od korisnika.");
+                        // Obrada poruke od uređaja
+                        Console.WriteLine($"Korisnik preko UDP je poslao poruku-> {receivedMessage}");
+                    }*/
+                    //Console.WriteLine($"Klijent je preko udp poslao poruku-> {receivedMessage}");
+
+                    //povezivanje uredjaja i servera
+                    IPEndPoint uredjajEP = new IPEndPoint(IPAddress.Loopback, udpPortUrejdjaja);
+                    //controlSocket.Bind(uredjajEP);
+                    byte[] initialData = Encoding.UTF8.GetBytes(ime + ":" + funkcija + ":" + vrednost);
+                    controlSocket.SendTo(initialData, uredjajEP);
+
+
                     string odgovor = "Da li zelite da izvrsite jos neku komandu";
-                    brojBajta = acceptedSocket.Send(Encoding.UTF8.GetBytes(odgovor));
+                    initialData = Encoding.UTF8.GetBytes(odgovor);
+                    controlSocket.SendTo(initialData, deviceEndpoint);
+                    Console.WriteLine("KORISNIKOV END POINT->"+(deviceEndpoint));
 
-                    brojBajta = acceptedSocket.Receive(buffer);
-                    odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta);
+                    receivedBytes = controlSocket.ReceiveFrom(buffer, ref deviceEndpoint);
+                    receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
+                    Console.WriteLine($"Korisnik preko UDP je poslao poruku-> {receivedMessage}");
 
-                    if (odgovor == "ne")
+                    
+
+                    if (receivedMessage == "ne")
                     {
                         break;
                     }
 
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
+
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+           
+            
             Console.WriteLine("Server zavrsava sa radom");
             Console.ReadKey();
             acceptedSocket.Close();
