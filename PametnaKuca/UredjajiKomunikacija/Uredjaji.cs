@@ -51,7 +51,7 @@ namespace UredjajKomunikacija
                         }
                     }
                    // u.AzurirajListu(uredjaji);
-                    break;
+                   // break;
 
                 }
                 catch (SocketException ex)

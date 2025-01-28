@@ -17,7 +17,7 @@ namespace Korisnik
             // Povezivanje
             Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-            IPEndPoint serverEP = new IPEndPoint(IPAddress.Loopback, 50001);
+            IPEndPoint serverEP = new IPEndPoint(IPAddress.Parse("192.168.100.97"), 50001);
             byte[] buffer = new byte[4096];
             BinaryFormatter formatter = new BinaryFormatter();
             string odgovor = "";

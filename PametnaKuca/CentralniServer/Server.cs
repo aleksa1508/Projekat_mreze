@@ -105,6 +105,7 @@ namespace TCPServer
                                         udpSockets.Add(udpSocket);
 
                                         Console.WriteLine($"UDP soket kreiran na portu {udpPort1}");
+
                                     }
                                     else
                                     {
@@ -132,14 +133,14 @@ namespace TCPServer
                             while (true)
                             {
 
-                                List<Uredjaj> uredjaji = u.uredjaji;
-                                /*foreach (var v in uredjaji)
+                                List<Uredjaj> uredjaji = u.SviUredjaji();
+                                foreach (var v in uredjaji)
                                 {
                                     foreach (var s in v.Funkcije)
                                     {
                                         Console.WriteLine(s.Key + " " + s.Value);
                                     }
-                                }*/
+                                }
                                 Console.WriteLine(u.IspisiSveUredjajeUTabeli());
                                 
                                 using (MemoryStream ms = new MemoryStream())
@@ -158,15 +159,26 @@ namespace TCPServer
                                 string funkcija = "";
                                 string vrednost = "";
                                 string ime = "";
+                                Uredjaj u1 = new Uredjaj();
                                 using (MemoryStream ms = new MemoryStream(buffer, 0, receivedBytes))
                                 {
-                                    Uredjaj u1 = (Uredjaj)formatter.Deserialize(ms);
+                                    u1 = (Uredjaj)formatter.Deserialize(ms);
                                     funkcija = (string)formatter.Deserialize(ms);
                                     vrednost = (string)formatter.Deserialize(ms);
                                     udpPortUrejdjaja = u1.Port;
                                     ime = u1.Ime;
+                                   
+                                    
                                 }
-                               
+                                foreach (var s in uredjaji)
+                                {
+                                    if (s.Ime == u1.Ime)
+                                    {
+                                        s.AzurirajFunkciju(funkcija, vrednost);
+                                        break;
+                                    }
+                                }
+                                Console.WriteLine("\n"+funkcija + " " + vrednost);
                                 //povezivanje uredjaja i servera
                                 IPEndPoint uredjajEP = new IPEndPoint(IPAddress.Loopback, udpPortUrejdjaja);
                                 // udpSocket.Bind(uredjajEP); ovo ja mislim ne treba!!!!!
