@@ -1,11 +1,9 @@
-﻿using System;
+﻿using KucniUredjaji;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
-using KucniUredjaji;
 
 namespace UredjajKomunikacija
 
@@ -19,7 +17,7 @@ namespace UredjajKomunikacija
             udpSocket.Bind(destinationEP);
             EndPoint posiljaocEP = new IPEndPoint(IPAddress.Any, 0);
             Uredjaj u = new Uredjaj();
-            List<Uredjaj> uredjaji = u.SviUredjaji();
+            List<Uredjaj> uredjaji =u.SviUredjaji();
             while (true) // 1.
             {
                 byte[] prijemniBafer = new byte[1024];
@@ -30,7 +28,7 @@ namespace UredjajKomunikacija
 
                     string receivedMessage = Encoding.UTF8.GetString(prijemniBafer, 0, brBajta);
 
-                    Console.WriteLine($"Stigao je odgovor od {posiljaocEP}, duzine {brBajta}->:\n{receivedMessage}"); // 4
+                    Console.WriteLine($"Stigao je odgovor od {posiljaocEP}, duzine {brBajta}->:{receivedMessage}"); // 4
 
                     string[] parts = receivedMessage.Split(':');
                     Console.WriteLine(parts.Length + " " + parts[0] + " " + parts[1] + " " + parts[2]);
@@ -42,7 +40,17 @@ namespace UredjajKomunikacija
                             break;
                         }
                     }
+                    Console.WriteLine(u.IspisiSveUredjajeUTabeli());
 
+                    foreach(var s in uredjaji)
+                    {
+                      
+                        foreach(var e in s.EvidencijaKomandi)
+                        {
+                            Console.WriteLine(e.ToString());    
+                        }
+                    }
+                   // u.AzurirajListu(uredjaji);
                     break;
 
                 }

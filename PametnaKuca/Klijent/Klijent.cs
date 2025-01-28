@@ -16,7 +16,6 @@ namespace Korisnik
         {
             // Povezivanje
             Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-           // clientSocket.Blocking = false;
 
             IPEndPoint serverEP = new IPEndPoint(IPAddress.Loopback, 50001);
             byte[] buffer = new byte[4096];
@@ -41,97 +40,35 @@ namespace Korisnik
                     return;
                 }
             }
-
-            // Prijava korisnika
             do
             {
-                Console.WriteLine("Unesite korisničko ime:");
+                Console.WriteLine("Unesite korisnicko ime:");
                 string korisnickoIme = Console.ReadLine();
                 Console.WriteLine("Unesite lozinku:");
                 string lozinka = Console.ReadLine();
 
                 string format = $"{korisnickoIme}:{lozinka}";
+                brojBajta = clientSocket.Send(Encoding.UTF8.GetBytes(format));
+                brojBajta = clientSocket.Receive(buffer);
+                odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta);
 
-                try
-                {
-                    // Šaljemo korisničke podatke
-                    clientSocket.Send(Encoding.UTF8.GetBytes(format));
-                    Console.WriteLine("Podaci poslati serveru...");
+                Console.WriteLine("Prijava->" + odgovor);
+            } while (odgovor != "USPESNO");
 
-                    // Čekamo odgovor
-                    while (true)
-                    {
-                        try
-                        {
-                            brojBajta = clientSocket.Receive(buffer);
-                            if (brojBajta > 0)
-                            {
-                                odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta).Trim();
-                                Console.WriteLine("Odgovor servera: " + odgovor);
-
-                                // Ako je prijava uspešna, izlazimo iz petlje
-                                if (odgovor.StartsWith("USPESNO"))
-                                {
-                                    Console.WriteLine("Prijava uspešna!");
-                                    break;
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Prijava neuspešna, pokušajte ponovo.");
-                                    break;
-                                }
-                            }
-                        }
-                        catch (SocketException ex)
-                        {
-                            if (ex.SocketErrorCode == SocketError.WouldBlock)
-                            {
-                                Console.WriteLine("Operacija bi blokirala, čekam na odgovor...");
-                                Thread.Sleep(100);
-                            }
-                            else
-                            {
-                                Console.WriteLine("Greška prilikom prijema: " + ex.Message);
-                                return;
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Greška tokom slanja: " + ex.Message);
-                    return;
-                }
-            } while (!odgovor.StartsWith("USPESNO"));
-            
             //Thread.Sleep(2000);
             // Prijem UDP porta
-            try
+
+            brojBajta = clientSocket.Receive(buffer);
+            if (brojBajta > 0)
             {
-                brojBajta = clientSocket.Receive(buffer);
-                if (brojBajta > 0)
-                {
-                    odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta);
-                    Console.WriteLine("UDP Port->" + odgovor);
-                }
+                odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta);
+                Console.WriteLine("UDP Port->" + odgovor);
             }
-            catch (SocketException ex)
-            {
-                if (ex.SocketErrorCode == SocketError.WouldBlock)
-                {
-                    Console.WriteLine("Operacija bi blokirala, pokušavam ponovo...");
-                }
-                else
-                {
-                    Console.WriteLine("Greška: " + ex.Message);
-                    return;
-                }
-            }
+
 
 
             // Povezivanje na UDP
             Socket udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            //udpSocket.Blocking = false;
             EndPoint deviceEndpoint = new IPEndPoint(IPAddress.Any, 0);
             int assignedPort;
             IPEndPoint destinationEP = new IPEndPoint(IPAddress.Loopback, 0);
@@ -144,30 +81,18 @@ namespace Korisnik
             string initialMessage = $"Klijent se povezao na UDP port: {assignedPort}";
             byte[] initialData = Encoding.UTF8.GetBytes(initialMessage);
 
+
+            udpSocket.SendTo(initialData, destinationEP);
+            Console.WriteLine($"Poruka poslata serveru: {initialMessage}");
+
+
+
             try
             {
-                udpSocket.SendTo(initialData, destinationEP);
-                Console.WriteLine($"Poruka poslata serveru: {initialMessage}");
-            }
-            catch (SocketException ex)
-            {
-                if (ex.SocketErrorCode == SocketError.WouldBlock)
+                // Glavni rad sa serverom
+                while (true)
                 {
-                    Console.WriteLine("UDP operacija bi blokirala, nastavljam dalje...");
-                }
-                else
-                {
-                    Console.WriteLine("Greška: " + ex.Message);
-                    return;
-                }
-            }
-
-            // Glavni rad sa serverom
-            while (true)
-            {
-                try
-                {
-                    brojBajta = clientSocket.Receive(buffer);
+                    brojBajta = udpSocket.ReceiveFrom(buffer, ref deviceEndpoint);
                     if (brojBajta > 0)
                     {
                         List<Uredjaj> uredjaji = new List<Uredjaj>();
@@ -226,20 +151,19 @@ namespace Korisnik
                             BinaryFormatter bf = new BinaryFormatter();
                             bf.Serialize(ms, izabraniUredjaj);
                             bf.Serialize(ms, funkcija);
-                            bf.Serialize(ms,vrednost);
+                            bf.Serialize(ms, vrednost);
                             byte[] data = ms.ToArray();
 
                             udpSocket.SendTo(data, destinationEP);
                         }
                         //udpSocket.SendTo(initialData, destinationEP);
-
                         int receivedBytes = udpSocket.ReceiveFrom(buffer, ref deviceEndpoint);
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
                         Console.WriteLine($"Korisnik preko UDP je poslao poruku-> {receivedMessage}");
 
 
-                       /* brojBajta = clientSocket.Receive(buffer);
-                        odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta);*/
+                        /* brojBajta = clientSocket.Receive(buffer);
+                         odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta);*/
                         string dodatak = "";
                         do
                         {
@@ -249,36 +173,24 @@ namespace Korisnik
 
                         if (dodatak.ToLower() == "ne")
                         {
-                            udpSocket.SendTo(Encoding.UTF8.GetBytes(dodatak),destinationEP);
+                            udpSocket.SendTo(Encoding.UTF8.GetBytes(dodatak), destinationEP);
                             break;
                         }
                         udpSocket.SendTo(Encoding.UTF8.GetBytes(dodatak), destinationEP);
                     }
-                }
-                catch (SocketException ex)
-                {
-                    if (ex.SocketErrorCode == SocketError.WouldBlock)
-                    {
-                        Console.WriteLine("Operacija bi blokirala, nastavljam dalje...");
-                        Thread.Sleep(100);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Greška: " + ex.Message);
-                        break;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Neočekivana greška: " + ex.Message);
-                    break;
+
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Neočekivana greška: " + ex.Message);
+            }
+            
 
             Console.WriteLine("Klijent završava sa radom.");
             Console.ReadKey();
             clientSocket.Close();
-           
+
         }
     }
 }
