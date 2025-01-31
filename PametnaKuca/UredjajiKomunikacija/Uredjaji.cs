@@ -13,7 +13,7 @@ namespace UredjajKomunikacija
         static void Main(string[] args)
         {
             Socket udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            IPEndPoint destinationEP = new IPEndPoint(IPAddress.Any, 60000);
+            IPEndPoint destinationEP = new IPEndPoint(IPAddress.Any, 60001);
             udpSocket.Bind(destinationEP);
             EndPoint posiljaocEP = new IPEndPoint(IPAddress.Any, 0);
             Uredjaj u = new Uredjaj();

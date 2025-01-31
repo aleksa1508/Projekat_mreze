@@ -15,21 +15,6 @@ namespace TCPServer
     public class Server
     {
         // private static UdpServer udpServer;
-        static void PokreniUredjaje(int brojKlijenata)
-        {
-            for (int i = 0; i < brojKlijenata; i++)
-            {
-                // Putanja do izvršnog fajla klijenta (potrebno je kompajlirati ga)
-                string clientPath = @"C:\Users\Dell 3520\Desktop\AA\MREZE\github\PametnaKuca\UredjajiKomunikacija\bin\Debug\UredjajiKomunikacija.exe";
-                int port = 60000 + i;
-                Process klijentProces = new Process(); // Stvaranje novog procesa
-                klijentProces.StartInfo.FileName = clientPath; //Zadavanje putanje za pokretanje
-                klijentProces.StartInfo.Arguments =port.ToString() ; // Argument - broj klijenta
-                klijentProces.Start(); // Pokretanje klijenta
-                Console.WriteLine($"Pokrenut klijent #{i + 1}");
-            }
-
-        }
         
         static void Main(string[] args)
         {
@@ -59,7 +44,7 @@ namespace TCPServer
             int udpPort1 = 0;
             
             
-            PokreniUredjaje(2);
+            //PokreniUredjaje(2);
             
             
             byte[] buffer = new byte[4096];

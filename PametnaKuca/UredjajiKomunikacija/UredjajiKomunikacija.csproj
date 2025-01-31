@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{319D99C0-6C8B-4F29-8293-39178B3E8699}</ProjectGuid>
+    <ProjectGuid>{ED807A16-6E2D-4D69-98E9-817AA4644EF5}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>UredjajiKomunikacija1</RootNamespace>
-    <AssemblyName>UredjajiKomunikacija1</AssemblyName>
+    <RootNamespace>UredjajiKomunikacija</RootNamespace>
+    <AssemblyName>UredjajiKomunikacija</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
