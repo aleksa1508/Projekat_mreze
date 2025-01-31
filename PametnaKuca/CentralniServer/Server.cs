@@ -59,7 +59,7 @@ namespace TCPServer
             int udpPort1 = 0;
             
             
-            //PokreniUredjaje(2);
+            PokreniUredjaje(2);
             
             
             byte[] buffer = new byte[4096];
