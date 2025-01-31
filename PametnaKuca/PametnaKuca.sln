@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Korisnik", "Klijent\Korisni
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CentralniServer", "CentralniServer\CentralniServer.csproj", "{5CF5A565-58F9-4DC9-B0AE-187889BBB128}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UredjajiKomunikacija", "UredjajiKomunikacija\UredjajiKomunikacija.csproj", "{2D44E5EF-B6D5-43E1-B623-C0A257E2E5DB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UredjajiKomunikacija1", "UredjajiKomunikacija1\UredjajiKomunikacija1.csproj", "{319D99C0-6C8B-4F29-8293-39178B3E8699}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{5CF5A565-58F9-4DC9-B0AE-187889BBB128}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CF5A565-58F9-4DC9-B0AE-187889BBB128}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CF5A565-58F9-4DC9-B0AE-187889BBB128}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D44E5EF-B6D5-43E1-B623-C0A257E2E5DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D44E5EF-B6D5-43E1-B623-C0A257E2E5DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D44E5EF-B6D5-43E1-B623-C0A257E2E5DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D44E5EF-B6D5-43E1-B623-C0A257E2E5DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{319D99C0-6C8B-4F29-8293-39178B3E8699}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{319D99C0-6C8B-4F29-8293-39178B3E8699}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{319D99C0-6C8B-4F29-8293-39178B3E8699}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{319D99C0-6C8B-4F29-8293-39178B3E8699}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

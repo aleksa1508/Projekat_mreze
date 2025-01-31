@@ -1,7 +1,6 @@
 ﻿using KucniUredjaji;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -11,27 +10,14 @@ namespace UredjajKomunikacija
 {
     public class Uredjaji
     {
-
-        static void Main(string [] args)
+        static void Main(string[] args)
         {
-           /* if (args.Length == 0)
-            {
-                Console.WriteLine("Nema prosleđenog porta!");
-                // return;
-            }
-
-            // Uzimanje porta sa args
-            int portUredjaja = int.Parse(args[0]);
-            Console.WriteLine(portUredjaja);
-            Console.WriteLine($"Klijent je pokrenut na portu: {portUredjaja}");*/
-
             Socket udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            
-            IPEndPoint destinationEP = new IPEndPoint(IPAddress.Any, 60001);
+            IPEndPoint destinationEP = new IPEndPoint(IPAddress.Any, 60000);
             udpSocket.Bind(destinationEP);
             EndPoint posiljaocEP = new IPEndPoint(IPAddress.Any, 0);
             Uredjaj u = new Uredjaj();
-            List<Uredjaj> uredjaji =u.SviUredjaji();
+            List<Uredjaj> uredjaji = u.SviUredjaji();
             while (true) // 1.
             {
                 byte[] prijemniBafer = new byte[1024];
@@ -56,16 +42,16 @@ namespace UredjajKomunikacija
                     }
                     Console.WriteLine(u.IspisiSveUredjajeUTabeli());
 
-                    foreach(var s in uredjaji)
+                    foreach (var s in uredjaji)
                     {
-                      
-                        foreach(var e in s.EvidencijaKomandi)
+
+                        foreach (var e in s.EvidencijaKomandi)
                         {
-                            Console.WriteLine(e.ToString());    
+                            Console.WriteLine(e.ToString());
                         }
                     }
-                   // u.AzurirajListu(uredjaji);
-                   // break;
+                    // u.AzurirajListu(uredjaji);
+                    // break;
 
                 }
                 catch (SocketException ex)
