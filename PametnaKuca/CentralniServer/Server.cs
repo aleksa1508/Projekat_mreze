@@ -111,7 +111,7 @@ namespace TCPServer
                                 EndPoint clientEP = new IPEndPoint(IPAddress.Any, 0);
                                 int receivedBytes = s.ReceiveFrom(buffer, ref clientEP);
                                 string receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
-
+                               
                                 Console.WriteLine($"Poruka od UDP klijenta ({clientEP}): {receivedMessage}");
                                 while (true)
                                 {
@@ -168,14 +168,9 @@ namespace TCPServer
                                     byte[] initialData = Encoding.UTF8.GetBytes(ime + ":" + funkcija + ":" + vrednost);
                                     s.SendTo(initialData, uredjajEP);
 
-
-
                                     string odgovor = "Da li zelite da izvrsite jos neku komandu";
                                     initialData = Encoding.UTF8.GetBytes(odgovor);
                                     s.SendTo(initialData, clientEP);
-                                    //Console.WriteLine("KORISNIKOV END POINT->" + (clientEP));
-
-
 
                                     receivedBytes = s.ReceiveFrom(buffer, ref clientEP);
                                     receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
