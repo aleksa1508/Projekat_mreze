@@ -1,6 +1,7 @@
 ﻿using KucniUredjaji;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -12,8 +13,14 @@ namespace UredjajKomunikacija
     {
         static void Main(string[] args)
         {
+            int broj = 0;
+            foreach (var arg in args)
+            {
+                Console.WriteLine($"Primljen argument: {arg}");
+                broj = Int32.Parse(arg);
+            }
             Socket udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            IPEndPoint destinationEP = new IPEndPoint(IPAddress.Any, 60001);
+            IPEndPoint destinationEP = new IPEndPoint(IPAddress.Any,broj);
             udpSocket.Bind(destinationEP);
             EndPoint posiljaocEP = new IPEndPoint(IPAddress.Any, 0);
             Uredjaj u = new Uredjaj();
@@ -37,10 +44,11 @@ namespace UredjajKomunikacija
                         if (s.Ime == parts[0])
                         {
                             s.AzurirajFunkciju(parts[1], parts[2]);
+                            Console.WriteLine(s.IspisiSveFunkcijeUredjaja());
                             break;
                         }
                     }
-                    Console.WriteLine(u.IspisiSveUredjajeUTabeli());
+
 
                     foreach (var s in uredjaji)
                     {

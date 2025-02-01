@@ -110,14 +110,14 @@ namespace KucniUredjaji
             uredjaji = noviUredjaji;
         }
 
-        public string IspisiSveUredjajeUTabeli()
+        public string IspisiSveUredjajeUTabeli(List<Uredjaj> lista)
         {
             // Zaglavlje tabele
             string tabela = string.Format("{0,-15} | {1,-10} | {2,-50}\n", "Ime Uređaja", "Port", "Funkcije");
             tabela += new string('-', 80) + "\n";
 
             // Ispis uređaja
-            foreach (var uredjaj in uredjaji)
+            foreach (var uredjaj in lista)
             {
                 // Pretvaranje funkcija u format ključ: vrednost
                 string funkcije = string.Join(", ", uredjaj.Funkcije.Select(f => $"{f.Key}: {f.Value}"));
@@ -128,7 +128,21 @@ namespace KucniUredjaji
 
             return tabela;
         }
+        public string IspisiSveFunkcijeUredjaja()
+        {
+            // Zaglavlje tabele
+            string tabela = string.Format("{0,-15} | {1,-10} | {2,-50}\n", "Ime Uređaja", "Port", "Funkcije");
+            tabela += new string('-', 80) + "\n";
 
+            // Pretvaranje funkcija u format ključ: vrednost
+            string funkcije = string.Join(", ", this.Funkcije.Select(f => $"{f.Key}: {f.Value}"));
+
+            // Dodavanje uređaja u tabelu
+            tabela += string.Format("{0,-15} | {1,-10} | {2,-50}\n", this.Ime, this.Port, funkcije);
+
+
+            return tabela;
+        }
 
     }
 }

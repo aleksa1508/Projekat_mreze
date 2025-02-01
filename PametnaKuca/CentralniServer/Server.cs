@@ -15,7 +15,20 @@ namespace TCPServer
     public class Server
     {
         // private static UdpServer udpServer;
-        
+
+        static void PokreniKlijente(int brojKlijenata)
+        {
+            for (int i = 0; i < brojKlijenata; i++)
+            {
+                // Putanja do izvršnog fajla klijenta (potrebno je kompajlirati ga)
+                string clientPath = @"C:\Users\Dell 3520\Desktop\AA\MREZE\github\PametnaKuca\UredjajiKomunikacija\bin\Debug\UredjajiKomunikacija.exe";
+                Process klijentProces = new Process(); // Stvaranje novog procesa
+                klijentProces.StartInfo.FileName = clientPath; //Zadavanje putanje za pokretanje
+                klijentProces.StartInfo.Arguments = $"{i + 60001}"; // Argument - broj klijenta
+                klijentProces.Start(); // Pokretanje klijenta
+                Console.WriteLine($"Pokrenut klijent #{i + 1}");
+            }
+        }
         static void Main(string[] args)
         {
 
@@ -42,9 +55,9 @@ namespace TCPServer
             List<Socket> klijenti = new List<Socket>(); // Pravimo posebnu listu za klijentske sokete kako nam je ne bi obrisala Select funkcija
             List<Socket> udpSockets = new List<Socket>();
             int udpPort1 = 0;
-            
-            
-            //PokreniUredjaje(2);
+
+
+            PokreniKlijente(2);
             
             
             byte[] buffer = new byte[4096];
@@ -111,7 +124,7 @@ namespace TCPServer
                                             Console.WriteLine(s2.Key + " " + s2.Value);
                                         }
                                     }
-                                    Console.WriteLine(u.IspisiSveUredjajeUTabeli());
+                                    Console.WriteLine(u.IspisiSveUredjajeUTabeli(uredjaji));
 
                                     using (MemoryStream ms = new MemoryStream())
                                     {
@@ -210,9 +223,6 @@ namespace TCPServer
 
                                         Console.WriteLine($"UDP soket kreiran na portu {udpPort1}");
                                         //for petlja i
-                                        
-
-
 
                                     }
                                     else
