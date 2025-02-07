@@ -49,15 +49,20 @@ namespace Korisnik
 
                 string format = $"{korisnickoIme}:{lozinka}";
                 brojBajta = clientSocket.Send(Encoding.UTF8.GetBytes(format));
-                brojBajta = clientSocket.Receive(buffer);
-                odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta);
+                clientSocket.Blocking = false;
+                if (clientSocket.Poll(1000 * 1000, SelectMode.SelectRead))
+                {
+                     brojBajta = clientSocket.Receive(buffer);
+                    odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta);
 
-                Console.WriteLine("Prijava->" + odgovor);
+                    Console.WriteLine("Prijava->" + odgovor);
+                    clientSocket.Blocking = true;
+                }
+                //if()
+
             } while (odgovor != "USPESNO");
 
-            //Thread.Sleep(2000);
             // Prijem UDP porta
-
             brojBajta = clientSocket.Receive(buffer);
             if (brojBajta > 0)
             {
@@ -81,10 +86,9 @@ namespace Korisnik
             string initialMessage = $"Klijent se povezao na UDP port: {assignedPort}";
             byte[] initialData = Encoding.UTF8.GetBytes(initialMessage);
 
-
             udpSocket.SendTo(initialData, destinationEP);
             Console.WriteLine($"Poruka poslata serveru: {initialMessage}");
-
+            
 
 
             try
@@ -95,6 +99,7 @@ namespace Korisnik
                     brojBajta = udpSocket.ReceiveFrom(buffer, ref deviceEndpoint);
                     if (brojBajta > 0)
                     {
+                        
                         List<Uredjaj> uredjaji = new List<Uredjaj>();
                         using (MemoryStream ms = new MemoryStream(buffer, 0, brojBajta))
                         {

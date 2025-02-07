@@ -15,7 +15,7 @@ namespace TCPServer
     public class Server
     {
         // private static UdpServer udpServer;
-
+       
         static void PokreniKlijente(int brojKlijenata)
         {
             for (int i = 0; i < brojKlijenata; i++)
@@ -55,7 +55,7 @@ namespace TCPServer
             List<Socket> klijenti = new List<Socket>(); // Pravimo posebnu listu za klijentske sokete kako nam je ne bi obrisala Select funkcija
             List<Socket> udpSockets = new List<Socket>();
             int udpPort1 = 0;
-
+            int brojac = 0;
 
             PokreniKlijente(2);
             
@@ -89,6 +89,8 @@ namespace TCPServer
                     Socket.Select(checkRead, null, checkError, 1000*1000);
 
 
+                    
+
                     if (checkRead.Count > 0)
                     {
                         Console.WriteLine($"Broj dogadjaja je: {checkRead.Count}");
@@ -108,88 +110,100 @@ namespace TCPServer
                              */
                             else if (udpSockets.Contains(s))
                             {
+                              
                                 EndPoint clientEP = new IPEndPoint(IPAddress.Any, 0);
-                                int receivedBytes = s.ReceiveFrom(buffer, ref clientEP);
-                                string receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
-                               
-                                Console.WriteLine($"Poruka od UDP klijenta ({clientEP}): {receivedMessage}");
-                                while (true)
-                                {
-
-                                    List<Uredjaj> uredjaji = u.SviUredjaji();
-                                    foreach (var v in uredjaji)
+                                List<Uredjaj> uredjaji = u.SviUredjaji();
+                                Console.WriteLine("AAAAAAAAAAAAAAAAAAA");
+                                   
+                                   int receivedBytes = s.ReceiveFrom(buffer, ref clientEP);
+                                    string receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
+                                    if (receivedMessage=="ne")
                                     {
-                                        foreach (var s2 in v.Funkcije)
+                                        s.Close();
+                                        udpSockets.Remove(s);
+                                        
+                                    }
+                                    else if (receivedMessage == "da")
+                                    {
+                                   
+                                        foreach (var v in uredjaji)
                                         {
-                                            Console.WriteLine(s2.Key + " " + s2.Value);
+                                            foreach (var s2 in v.Funkcije)
+                                            {
+                                                Console.WriteLine(s2.Key + " " + s2.Value);
+                                            }
                                         }
-                                    }
-                                    Console.WriteLine(u.IspisiSveUredjajeUTabeli(uredjaji));
-
-                                    using (MemoryStream ms = new MemoryStream())
-                                    {
-
-                                        formatter.Serialize(ms, uredjaji);
-                                        byte[] data = ms.ToArray();
-
-                                        s.SendTo(data, clientEP);
-                                    }
+                                        Console.WriteLine(u.IspisiSveUredjajeUTabeli(uredjaji));
 
 
-                                    receivedBytes = s.ReceiveFrom(buffer, ref clientEP);
-
-                                    int udpPortUrejdjaja = 0;
-                                    string funkcija = "";
-                                    string vrednost = "";
-                                    string ime = "";
-                                    Uredjaj u1 = new Uredjaj();
-                                    using (MemoryStream ms = new MemoryStream(buffer, 0, receivedBytes))
-                                    {
-                                        u1 = (Uredjaj)formatter.Deserialize(ms);
-                                        funkcija = (string)formatter.Deserialize(ms);
-                                        vrednost = (string)formatter.Deserialize(ms);
-                                        udpPortUrejdjaja = u1.Port;
-                                        ime = u1.Ime;
-
-
-                                    }
-                                    foreach (var s1 in uredjaji)
-                                    {
-                                        if (s1.Ime == u1.Ime)
+                                        using (MemoryStream ms = new MemoryStream())
                                         {
-                                            s1.AzurirajFunkciju(funkcija, vrednost);
+
+                                            formatter.Serialize(ms, uredjaji);
+                                            byte[] data = ms.ToArray();
+                                            s.SendTo(data, clientEP);
+                                        }
+                                    
+                                     }
+                                    
+                                    else{
+                                        
+
+                                        Console.WriteLine("PROSLOOOOOOOOO");
+                                        int udpPortUrejdjaja = 0;
+                                        string funkcija = "";
+                                        string vrednost = "";
+                                        string ime = "";
+                                        Uredjaj u1 = new Uredjaj();
+                                        using (MemoryStream ms = new MemoryStream(buffer, 0, receivedBytes))
+                                        {
+                                            u1 = (Uredjaj)formatter.Deserialize(ms);
+                                            funkcija = (string)formatter.Deserialize(ms);
+                                            vrednost = (string)formatter.Deserialize(ms);
+                                            udpPortUrejdjaja = u1.Port;
+                                            ime = u1.Ime;
+
+
+                                        }
+                                        foreach (var s1 in uredjaji)
+                                        {
+                                            if (s1.Ime == u1.Ime)
+                                            {
+                                                s1.AzurirajFunkciju(funkcija, vrednost);
+                                                break;
+                                            }
+                                        }
+                                        Console.WriteLine("\n" + funkcija + " " + vrednost);
+                                        //povezivanje uredjaja i servera
+                                        IPEndPoint uredjajEP = new IPEndPoint(IPAddress.Loopback, udpPortUrejdjaja);
+                                        // udpSocket.Bind(uredjajEP); ovo ja mislim ne treba!!!!!
+                                        byte[] initialData = Encoding.UTF8.GetBytes(ime + ":" + funkcija + ":" + vrednost);
+                                        s.SendTo(initialData, uredjajEP);
+
+                                        string odgovor = "Da li zelite da izvrsite jos neku komandu";
+                                        initialData = Encoding.UTF8.GetBytes(odgovor);
+                                        s.SendTo(initialData, clientEP);
+
+                                       /* receivedBytes = s.ReceiveFrom(buffer, ref clientEP);
+                                        receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
+                                        Console.WriteLine($"Korisnik preko UDP je poslao poruku-> {receivedMessage}");
+
+                                    */
+                                        foreach (var v in u.uredjaji)
+                                        {
+                                            foreach (var s4 in v.Funkcije)
+                                            {
+                                                Console.WriteLine(s4.Key + " " + s4.Value);
+                                            }
+                                        }
+                                    brojac++;
+                                        /*if (receivedMessage == "ne")
+                                        {
                                             break;
-                                        }
-                                    }
-                                    Console.WriteLine("\n" + funkcija + " " + vrednost);
-                                    //povezivanje uredjaja i servera
-                                    IPEndPoint uredjajEP = new IPEndPoint(IPAddress.Loopback, udpPortUrejdjaja);
-                                    // udpSocket.Bind(uredjajEP); ovo ja mislim ne treba!!!!!
-                                    byte[] initialData = Encoding.UTF8.GetBytes(ime + ":" + funkcija + ":" + vrednost);
-                                    s.SendTo(initialData, uredjajEP);
-
-                                    string odgovor = "Da li zelite da izvrsite jos neku komandu";
-                                    initialData = Encoding.UTF8.GetBytes(odgovor);
-                                    s.SendTo(initialData, clientEP);
-
-                                    receivedBytes = s.ReceiveFrom(buffer, ref clientEP);
-                                    receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
-                                    Console.WriteLine($"Korisnik preko UDP je poslao poruku-> {receivedMessage}");
-
-
-                                    foreach (var v in u.uredjaji)
-                                    {
-                                        foreach (var s4 in v.Funkcije)
-                                        {
-                                            Console.WriteLine(s4.Key + " " + s4.Value);
-                                        }
+                                        }*/
                                     }
 
-                                    if (receivedMessage == "ne")
-                                    {
-                                        break;
-                                    }
-                                }
+                                
 
                             }
                             else 
@@ -206,18 +220,45 @@ namespace TCPServer
                                         // Клијент валидан, шаљемо одговор
                                         string odgovor = "USPESNO";
                                         s.Send(Encoding.UTF8.GetBytes(odgovor));
-
+                                        Console.WriteLine("aaaaaaaaaaaaaaaaaa");
+                                        Thread.Sleep(1000);
                                         // Креирамо UDP сокет за комуникацију
                                          udpPort1 = random.Next(50002, 60000);
                                         s.Send(Encoding.UTF8.GetBytes(udpPort1.ToString()));
-
+                                        Console.WriteLine("bbbbbbbbbbbbbbbbbbb");
                                         Socket udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                                         IPEndPoint udpServerEP = new IPEndPoint(IPAddress.Loopback, udpPort1);
                                         udpSocket.Bind(udpServerEP);
                                         udpSockets.Add(udpSocket);
-
                                         Console.WriteLine($"UDP soket kreiran na portu {udpPort1}");
                                         //for petlja i
+                                        EndPoint clientEP = new IPEndPoint(IPAddress.Any, 0);
+                                        int receivedBytes = udpSocket.ReceiveFrom(buffer, ref clientEP);
+                                        string receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
+
+                                        udpSocket.Blocking = false;
+                                        Console.WriteLine($"Poruka od UDP klijenta ({clientEP}): {receivedMessage}");
+                                        
+                                        List<Uredjaj> uredjaji = u.SviUredjaji();
+                                        foreach (var v in uredjaji)
+                                        {
+                                            foreach (var s2 in v.Funkcije)
+                                            {
+                                                Console.WriteLine(s2.Key + " " + s2.Value);
+                                            }
+                                        }
+                                        Console.WriteLine(u.IspisiSveUredjajeUTabeli(uredjaji));
+
+
+                                        using (MemoryStream ms = new MemoryStream())
+                                        {
+
+                                            formatter.Serialize(ms, uredjaji);
+                                            byte[] data = ms.ToArray();
+                                            udpSocket.SendTo(data, clientEP);
+                                        }
+                                        Console.WriteLine("aaaaaaaaaaaaaaaaaa");
+
 
                                     }
                                     else
@@ -237,7 +278,6 @@ namespace TCPServer
 
                             
                         }
-                        
                     }
                     checkRead.Clear();
                 }
@@ -258,10 +298,10 @@ namespace TCPServer
             }
             
 
+            serverSocket.Close();
             Console.WriteLine("Server zavrsava sa radom");
             Console.ReadKey();
             //acceptedSocket.Close();
-            serverSocket.Close();
         }
 
     }
