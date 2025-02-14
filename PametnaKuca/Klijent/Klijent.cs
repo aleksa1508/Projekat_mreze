@@ -6,7 +6,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Threading;
 
 namespace Korisnik
 {
@@ -40,6 +39,7 @@ namespace Korisnik
                     return;
                 }
             }
+        PONOVNO_LOGOVANJE:
             do
             {
                 Console.WriteLine("Unesite korisnicko ime:");
@@ -52,7 +52,7 @@ namespace Korisnik
                 clientSocket.Blocking = false;
                 if (clientSocket.Poll(1000 * 1000, SelectMode.SelectRead))
                 {
-                     brojBajta = clientSocket.Receive(buffer);
+                    brojBajta = clientSocket.Receive(buffer);
                     odgovor = Encoding.UTF8.GetString(buffer, 0, brojBajta);
 
                     Console.WriteLine("Prijava->" + odgovor);
@@ -88,7 +88,7 @@ namespace Korisnik
 
             udpSocket.SendTo(initialData, destinationEP);
             Console.WriteLine($"Poruka poslata serveru: {initialMessage}");
-            
+
 
 
             try
@@ -99,7 +99,7 @@ namespace Korisnik
                     brojBajta = udpSocket.ReceiveFrom(buffer, ref deviceEndpoint);
                     if (brojBajta > 0)
                     {
-                        
+
                         List<Uredjaj> uredjaji = new List<Uredjaj>();
                         using (MemoryStream ms = new MemoryStream(buffer, 0, brojBajta))
                         {
@@ -186,11 +186,19 @@ namespace Korisnik
 
                 }
             }
+            catch (SocketException ex)
+            {
+                // Uhvati grešku kada UDP socket nije validan
+                //Console.WriteLine("Greška pri komunikaciji na UDP portu: " + ex.Message);
+                Console.WriteLine("Sesija je istekla ili je port zatvoren. Molimo vas da se ponovo prijavite.");
+                udpSocket.Close();
+                goto PONOVNO_LOGOVANJE;  // izlazak iz trenutne sesije i vraćanje na prijavu
+            }
             catch (Exception ex)
             {
                 Console.WriteLine("Neočekivana greška: " + ex.Message);
             }
-            
+
 
             Console.WriteLine("Klijent završava sa radom.");
             Console.ReadKey();

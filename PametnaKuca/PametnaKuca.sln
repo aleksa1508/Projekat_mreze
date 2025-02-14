@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CentralniServer", "Centraln
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UredjajiKomunikacija", "UredjajiKomunikacija\UredjajiKomunikacija.csproj", "{ED807A16-6E2D-4D69-98E9-817AA4644EF5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KorisnikLibrary", "KorisnikLibrary\KorisnikLibrary.csproj", "{F6B5EF24-0190-4506-BC19-63D69B392D34}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{ED807A16-6E2D-4D69-98E9-817AA4644EF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED807A16-6E2D-4D69-98E9-817AA4644EF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED807A16-6E2D-4D69-98E9-817AA4644EF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6B5EF24-0190-4506-BC19-63D69B392D34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6B5EF24-0190-4506-BC19-63D69B392D34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6B5EF24-0190-4506-BC19-63D69B392D34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6B5EF24-0190-4506-BC19-63D69B392D34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

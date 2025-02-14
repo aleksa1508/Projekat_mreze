@@ -1,11 +1,12 @@
-﻿using KucniUredjaji;
+﻿using KorisnikLibrary;
+using KucniUredjaji;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
@@ -15,7 +16,7 @@ namespace TCPServer
     public class Server
     {
         // private static UdpServer udpServer;
-       
+
         static void PokreniKlijente(int brojKlijenata)
         {
             for (int i = 0; i < brojKlijenata; i++)
@@ -38,7 +39,15 @@ namespace TCPServer
                 { "user1", "a" },
                 { "user2", "b" }
             };
+
+            Korisnici k = new Korisnici();
             Uredjaj u = new Uredjaj();
+
+            List<Korisnici> listaKorisnika = new List<Korisnici>
+            {
+                new Korisnici("Aleksa","Arsenic","user1","a",false,0),
+                new Korisnici("Uros","Milosevic","user2","b",false,0)
+            };
             //inicijalizacija servera
             Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
@@ -55,15 +64,17 @@ namespace TCPServer
             List<Socket> klijenti = new List<Socket>(); // Pravimo posebnu listu za klijentske sokete kako nam je ne bi obrisala Select funkcija
             List<Socket> udpSockets = new List<Socket>();
             int udpPort1 = 0;
-            int brojac = 0;
+            Dictionary<Socket, int> udpNeaktivnost = new Dictionary<Socket, int>(); // UDP soketi i broj ciklusa neaktivnosti
+            const int MAX_NEAKTIVNIH_CIKLUSA = 20; // Maksimalan broj ciklusa neaktivnosti pre zatvaranja
+
 
             PokreniKlijente(2);
-            
-            
+            bool kraj = false;
+
             byte[] buffer = new byte[4096];
             try
             {
-                while (true)
+                while (!kraj)
                 {
                     List<Socket> checkRead = new List<Socket>();
                     List<Socket> checkError = new List<Socket>();
@@ -86,10 +97,10 @@ namespace TCPServer
                         checkRead.Add(s);
                         checkError.Add(s);
                     }
-                    Socket.Select(checkRead, null, checkError, 1000*1000);
+                    Socket.Select(checkRead, null, checkError, 1000 * 1000);
 
 
-                    
+
 
                     if (checkRead.Count > 0)
                     {
@@ -103,36 +114,53 @@ namespace TCPServer
                                 client.Blocking = false;
                                 klijenti.Add(client);
                                 Console.WriteLine($"Klijent se povezao sa {client.RemoteEndPoint}");
-                                
+
                             }
                             /*
                              
                              */
                             else if (udpSockets.Contains(s))
                             {
-                              
+
                                 EndPoint clientEP = new IPEndPoint(IPAddress.Any, 0);
                                 List<Uredjaj> uredjaji = u.SviUredjaji();
-                                Console.WriteLine("AAAAAAAAAAAAAAAAAAA");
-                                   
-                                   int receivedBytes = s.ReceiveFrom(buffer, ref clientEP);
+
+                                int receivedBytes = s.ReceiveFrom(buffer, ref clientEP);
+                                if (receivedBytes > 0)
+                                {
+                                    udpNeaktivnost[s] = 0;
+
                                     string receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
-                                    if (receivedMessage=="ne")
+                                    if (receivedMessage == "ne")
                                     {
+                                        k.PretragaPorta(listaKorisnika, ((IPEndPoint)s.LocalEndPoint).Port);
+                                        k.IspisKorisnika(listaKorisnika);
+
+                                        if (k.PretragaNeaktivnosti(listaKorisnika) == true)
+                                        {
+
+                                            IPEndPoint udpServer5 = new IPEndPoint(IPAddress.Loopback, 60001);
+                                            IPEndPoint udpServer6 = new IPEndPoint(IPAddress.Loopback, 60002);
+
+                                            s.SendTo(Encoding.UTF8.GetBytes("Server je zavrsio sa radom"), udpServer5);
+                                            s.SendTo(Encoding.UTF8.GetBytes("Server je zavrsio sa radom"), udpServer6);
+                                            Thread.Sleep(5000);
+                                            s.Close();
+                                            udpSockets.Remove(s);
+                                            udpNeaktivnost.Remove(s);
+
+                                            kraj = true;
+                                            break;
+                                        }
+
                                         s.Close();
                                         udpSockets.Remove(s);
-                                        
+                                        udpNeaktivnost.Remove(s);
+
                                     }
                                     else if (receivedMessage == "da")
                                     {
-                                   
-                                        foreach (var v in uredjaji)
-                                        {
-                                            foreach (var s2 in v.Funkcije)
-                                            {
-                                                Console.WriteLine(s2.Key + " " + s2.Value);
-                                            }
-                                        }
+
                                         Console.WriteLine(u.IspisiSveUredjajeUTabeli(uredjaji));
 
 
@@ -143,13 +171,12 @@ namespace TCPServer
                                             byte[] data = ms.ToArray();
                                             s.SendTo(data, clientEP);
                                         }
-                                    
-                                     }
-                                    
-                                    else{
-                                        
 
-                                        Console.WriteLine("PROSLOOOOOOOOO");
+                                    }
+
+                                    else
+                                    {
+
                                         int udpPortUrejdjaja = 0;
                                         string funkcija = "";
                                         string vrednost = "";
@@ -173,7 +200,6 @@ namespace TCPServer
                                                 break;
                                             }
                                         }
-                                        Console.WriteLine("\n" + funkcija + " " + vrednost);
                                         //povezivanje uredjaja i servera
                                         IPEndPoint uredjajEP = new IPEndPoint(IPAddress.Loopback, udpPortUrejdjaja);
                                         // udpSocket.Bind(uredjajEP); ovo ja mislim ne treba!!!!!
@@ -184,29 +210,16 @@ namespace TCPServer
                                         initialData = Encoding.UTF8.GetBytes(odgovor);
                                         s.SendTo(initialData, clientEP);
 
-                                       /* receivedBytes = s.ReceiveFrom(buffer, ref clientEP);
-                                        receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
-                                        Console.WriteLine($"Korisnik preko UDP je poslao poruku-> {receivedMessage}");
+                                        Console.WriteLine(u.IspisiSveUredjajeUTabeli(uredjaji));
 
-                                    */
-                                        foreach (var v in u.uredjaji)
-                                        {
-                                            foreach (var s4 in v.Funkcije)
-                                            {
-                                                Console.WriteLine(s4.Key + " " + s4.Value);
-                                            }
-                                        }
-                                    brojac++;
-                                        /*if (receivedMessage == "ne")
-                                        {
-                                            break;
-                                        }*/
                                     }
 
-                                
+                                }
+
+
 
                             }
-                            else 
+                            else
                             {
                                 int receivedBytes1 = s.Receive(buffer);
                                 if (receivedBytes1 > 0)
@@ -215,17 +228,20 @@ namespace TCPServer
                                     Console.WriteLine($"Poruka od klijenta: {poruka}");
 
                                     string[] djelovi = poruka.Split(':');
-                                    if (djelovi.Length == 2 && korisnici.ContainsKey(djelovi[0]) && korisnici[djelovi[0]] == djelovi[1])
+                                    Korisnici prijavljenKorisnik = k.PretraziKorisnika(listaKorisnika, djelovi[0], djelovi[1]);
+                                    if (djelovi.Length == 2 && prijavljenKorisnik != null)
                                     {
+
                                         // Клијент валидан, шаљемо одговор
                                         string odgovor = "USPESNO";
                                         s.Send(Encoding.UTF8.GetBytes(odgovor));
-                                        Console.WriteLine("aaaaaaaaaaaaaaaaaa");
-                                        Thread.Sleep(1000);
+                                        Thread.Sleep(200);
                                         // Креирамо UDP сокет за комуникацију
-                                         udpPort1 = random.Next(50002, 60000);
+                                        udpPort1 = random.Next(50002, 60000);
+
+                                        prijavljenKorisnik.DodeljeniPort = udpPort1;
+
                                         s.Send(Encoding.UTF8.GetBytes(udpPort1.ToString()));
-                                        Console.WriteLine("bbbbbbbbbbbbbbbbbbb");
                                         Socket udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                                         IPEndPoint udpServerEP = new IPEndPoint(IPAddress.Loopback, udpPort1);
                                         udpSocket.Bind(udpServerEP);
@@ -238,15 +254,11 @@ namespace TCPServer
 
                                         udpSocket.Blocking = false;
                                         Console.WriteLine($"Poruka od UDP klijenta ({clientEP}): {receivedMessage}");
-                                        
+
+                                        k.IspisKorisnika(listaKorisnika);
+
                                         List<Uredjaj> uredjaji = u.SviUredjaji();
-                                        foreach (var v in uredjaji)
-                                        {
-                                            foreach (var s2 in v.Funkcije)
-                                            {
-                                                Console.WriteLine(s2.Key + " " + s2.Value);
-                                            }
-                                        }
+
                                         Console.WriteLine(u.IspisiSveUredjajeUTabeli(uredjaji));
 
 
@@ -257,8 +269,6 @@ namespace TCPServer
                                             byte[] data = ms.ToArray();
                                             udpSocket.SendTo(data, clientEP);
                                         }
-                                        Console.WriteLine("aaaaaaaaaaaaaaaaaa");
-
 
                                     }
                                     else
@@ -276,9 +286,45 @@ namespace TCPServer
                                 }
                             }
 
-                            
+
                         }
                     }
+                    foreach (var udpSocket in new List<Socket>(udpNeaktivnost.Keys))
+                    {
+                        udpNeaktivnost[udpSocket]++; // Povećaj broj neaktivnih ciklusa
+
+                        if (udpNeaktivnost[udpSocket] >= MAX_NEAKTIVNIH_CIKLUSA)
+                        {
+                            Console.WriteLine($"UDP sesija na portu {((IPEndPoint)udpSocket.LocalEndPoint).Port} je zatvorena zbog neaktivnosti.");
+                            k.PretragaPorta(listaKorisnika, ((IPEndPoint)udpSocket.LocalEndPoint).Port);
+                            k.IspisKorisnika(listaKorisnika);
+                            // Pronaći TCP socket povezan sa ovim UDP socketom
+                            Socket tcpSocket = klijenti.FirstOrDefault(s => ((IPEndPoint)s.RemoteEndPoint).Port == ((IPEndPoint)udpSocket.LocalEndPoint).Port);
+
+                            if (tcpSocket != null)
+                            {
+                                try
+                                {
+                                    string obavestenje = "Sesija je istekla zbog neaktivnosti. Prijavite se ponovo.";
+                                    tcpSocket.Send(Encoding.UTF8.GetBytes(obavestenje));
+                                }
+                                catch (SocketException)
+                                {
+                                    Console.WriteLine("Greška prilikom slanja obaveštenja korisniku.");
+                                }
+
+                                // Zatvoriti TCP konekciju i ukloniti korisnika iz liste
+                                tcpSocket.Close();
+                                klijenti.Remove(tcpSocket);
+                            }
+
+                            // Zatvaramo UDP socket i uklanjamo ga iz liste
+                            udpSocket.Close();
+                            udpSockets.Remove(udpSocket);
+                            udpNeaktivnost.Remove(udpSocket);
+                        }
+                    }
+
                     checkRead.Clear();
                 }
             }
@@ -289,19 +335,17 @@ namespace TCPServer
 
             foreach (Socket s in klijenti)
             {
-               // s.Send(Encoding.UTF8.GetBytes("Server je zavrsio sa radom"));
                 s.Close();
             }
             foreach (var udpSocket in udpSockets)
             {
                 udpSocket.Close();
             }
-            
+
 
             serverSocket.Close();
             Console.WriteLine("Server zavrsava sa radom");
             Console.ReadKey();
-            //acceptedSocket.Close();
         }
 
     }

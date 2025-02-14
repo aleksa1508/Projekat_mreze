@@ -39,7 +39,7 @@ namespace KucniUredjaji
                 new Uredjaj("Klima",60002,new Dictionary<string, string>{{ "stanje", "iskljuceno" },{ "temperatura", "15" }})
             };
         }
-       
+
         // Dodavanje ili ažuriranje funkcije uređaja
         public void AzurirajFunkciju(string funkcija, string vrednost)
         {
@@ -58,9 +58,9 @@ namespace KucniUredjaji
             // Evidentiraj promenu
             EvidencijaKomandi.Add($"[{PoslednjaPromena}] {Ime}: {funkcija} promenjena na {vrednost}");
         }
-        public void AzurirajFunkciju1(string ime,string funkcija, string vrednost)
+        public void AzurirajFunkciju1(string ime, string funkcija, string vrednost)
         {
-            foreach(var s in SviUredjaji().ToList())
+            foreach (var s in SviUredjaji().ToList())
             {
                 if (s.Ime == ime)
                 {
@@ -70,18 +70,18 @@ namespace KucniUredjaji
                     }
                     else
                     {
-                       s.Funkcije.Add(funkcija, vrednost);
+                        s.Funkcije.Add(funkcija, vrednost);
                     }
                 }
             }
-            
+
 
             // Ažuriraj vremensku oznaku
             PoslednjaPromena = DateTime.Now;
 
             // Evidentiraj promenu
             EvidencijaKomandi.Add($"[{PoslednjaPromena}] {Ime}: {funkcija} promenjena na {vrednost}");
-            
+
         }
         // Metoda za prikaz trenutnog stanja uređaja
         public string PrikaziStanje()
