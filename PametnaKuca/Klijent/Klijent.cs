@@ -58,7 +58,6 @@ namespace Korisnik
                     Console.WriteLine("Prijava->" + odgovor);
                     clientSocket.Blocking = true;
                 }
-                //if()
 
             } while (odgovor != "USPESNO");
 

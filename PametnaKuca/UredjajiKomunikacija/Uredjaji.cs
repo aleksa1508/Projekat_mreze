@@ -25,7 +25,7 @@ namespace UredjajKomunikacija
             Uredjaj u = new Uredjaj();
             List<Uredjaj> uredjaji = u.SviUredjaji();
             bool kraj = false;
-            while (!kraj) // 1.
+            while (!kraj)
             {
                 byte[] prijemniBafer = new byte[1024];
                 try
