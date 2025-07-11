@@ -35,7 +35,7 @@ namespace KucniUredjaji
         public Uredjaj()
         {
             uredjaji = new List<Uredjaj> {
-                new Uredjaj("Svetlo",60001,new Dictionary<string, string>{{ "intezitet", "70%" },{ "boja plava", "220" },{ "boja crvena", "110" }}),
+                new Uredjaj("Svetlo",60001,new Dictionary<string, string>{{ "intezitet", "70" },{ "boja plava", "220" },{ "boja crvena", "110" }}),
                 new Uredjaj("Klima",60002,new Dictionary<string, string>{{ "stanje", "iskljuceno" },{ "temperatura", "15" }})
             };
         }
@@ -58,33 +58,33 @@ namespace KucniUredjaji
             // Evidentiraj promenu
             EvidencijaKomandi.Add($"[{PoslednjaPromena}] {Ime}: {funkcija} promenjena na {vrednost}");
         }
-        public void AzurirajFunkciju1(string ime, string funkcija, string vrednost)
-        {
-            foreach (var s in SviUredjaji().ToList())
-            {
-                if (s.Ime == ime)
-                {
-                    if (s.Funkcije.ContainsKey(funkcija))
-                    {
-                        s.Funkcije[funkcija] = vrednost;
-                    }
-                    else
-                    {
-                        s.Funkcije.Add(funkcija, vrednost);
-                    }
-                }
-            }
+        /* public void AzurirajFunkciju1(string ime, string funkcija, string vrednost)
+         {
+             foreach (var s in SviUredjaji().ToList())
+             {
+                 if (s.Ime == ime)
+                 {
+                     if (s.Funkcije.ContainsKey(funkcija))
+                     {
+                         s.Funkcije[funkcija] = vrednost;
+                     }
+                     else
+                     {
+                         s.Funkcije.Add(funkcija, vrednost);
+                     }
+                 }
+             }
 
 
-            // Ažuriraj vremensku oznaku
-            PoslednjaPromena = DateTime.Now;
+             // Ažuriraj vremensku oznaku
+             PoslednjaPromena = DateTime.Now;
 
-            // Evidentiraj promenu
-            EvidencijaKomandi.Add($"[{PoslednjaPromena}] {Ime}: {funkcija} promenjena na {vrednost}");
+             // Evidentiraj promenu
+             EvidencijaKomandi.Add($"[{PoslednjaPromena}] {Ime}: {funkcija} promenjena na {vrednost}");
 
-        }
+         }*/
         // Metoda za prikaz trenutnog stanja uređaja
-        public string PrikaziStanje()
+        /*public string PrikaziStanje()
         {
             string stanje = $"Uređaj: {Ime}, Port: {Port}, Stanje funkcija:";
             foreach (var funkcija in Funkcije)
@@ -93,13 +93,13 @@ namespace KucniUredjaji
             }
             stanje.Substring(0, stanje.Length - 1);
             return stanje;
-        }
+        }*/
 
         // Metoda za prikaz evidencije komandi
-        public string PrikaziEvidenciju()
+        /*public string PrikaziEvidenciju()
         {
             return string.Join("\n", EvidencijaKomandi);
-        }
+        }*/
 
         public List<Uredjaj> SviUredjaji()
         {

@@ -27,7 +27,7 @@ namespace TCPServer
                 klijentProces.StartInfo.FileName = clientPath; //Zadavanje putanje za pokretanje
                 klijentProces.StartInfo.Arguments = $"{i + 60001}"; // Argument - broj klijenta
                 klijentProces.Start(); // Pokretanje klijenta
-                Console.WriteLine($"Pokrenut klijent #{i + 1}");
+                Console.WriteLine($"Pokrenut uredjaj #{i + 1}");
             }
         }
         static void Main(string[] args)
@@ -324,7 +324,7 @@ namespace TCPServer
                             udpNeaktivnost.Remove(udpSocket);
                         }
                     }
-
+                    checkError.Clear();
                     checkRead.Clear();
                 }
             }
