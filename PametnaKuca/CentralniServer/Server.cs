@@ -34,11 +34,11 @@ namespace TCPServer
         {
 
             Random random = new Random();
-            Dictionary<string, string> korisnici = new Dictionary<string, string>
-            {
-                { "user1", "a" },
-                { "user2", "b" }
-            };
+            /* Dictionary<string, string> korisnici = new Dictionary<string, string>
+             {
+                 { "user1", "a" },
+                 { "user2", "b" }
+             };*/
 
             Korisnici k = new Korisnici();
             Uredjaj u = new Uredjaj();
@@ -253,7 +253,7 @@ namespace TCPServer
                                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
 
                                         udpSocket.Blocking = false;
-                                        Console.WriteLine($"Poruka od UDP klijenta ({clientEP}): {receivedMessage}");
+                                        Console.WriteLine($"Poruka od UDP klijenta : {receivedMessage}");
 
                                         k.IspisKorisnika(listaKorisnika);
 

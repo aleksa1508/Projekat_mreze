@@ -133,7 +133,7 @@ namespace Korisnik
                         do
                         {
                             Console.WriteLine("Unesite ime funkcije koju želite da promenite:");
-                            funkcija = Console.ReadLine();
+                            funkcija = Console.ReadLine().Trim();
                             foreach (var f in izabraniUredjaj.Funkcije)
                             {
                                 if (f.Key == funkcija)
@@ -163,7 +163,7 @@ namespace Korisnik
                         //udpSocket.SendTo(initialData, destinationEP);
                         int receivedBytes = udpSocket.ReceiveFrom(buffer, ref deviceEndpoint);
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
-                        Console.WriteLine($"Korisnik preko UDP je poslao poruku-> {receivedMessage}");
+                        Console.WriteLine($"Server preko UDP je poslao poruku-> {receivedMessage}");
 
 
                         /* brojBajta = clientSocket.Receive(buffer);
